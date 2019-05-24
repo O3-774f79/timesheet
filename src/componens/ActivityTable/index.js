@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import List from './List';
 import TableList from './TableList';
 import {Modal, Button, Icon} from 'antd';
-
+import {CurrentDate} from '../../Helper.js';
 export default class idnex extends PureComponent {
   state = {
     term: {
@@ -106,51 +106,8 @@ export default class idnex extends PureComponent {
     display: 0,
   };
   componentWillMount () {
-    const d = new Date ();
-    const date = parseInt (d.getDate ());
-    const year = parseInt (d.getFullYear ()) + 543;
-    var month = '';
-    switch (d.getMonth () + 1) {
-      case 1:
-        month = 'มกราคม';
-        break;
-      case 2:
-        month = 'กุมภาพันธ์';
-        break;
-      case 3:
-        month = 'มีนาคม';
-        break;
-      case 4:
-        month = 'เมษายน';
-        break;
-      case 5:
-        month = 'พฤษภาคม';
-        break;
-      case 6:
-        month = 'มิถุนายน';
-        break;
-      case 7:
-        month = 'กรกฎาคม';
-        break;
-      case 8:
-        month = 'สิงหาคม';
-        break;
-      case 9:
-        month = 'กันยายน';
-        break;
-      case 10:
-        month = 'ตุลาคม';
-        break;
-      case 11:
-        month = 'พฤษจิกายน';
-        break;
-      case 12:
-        month = 'ธันวาคม';
-        break;
-    }
-
     this.setState ({
-      currentDate: `${date} ${month} ${year}`,
+      currentDate: CurrentDate (),
     });
   }
   onChange = event => {
@@ -222,6 +179,7 @@ export default class idnex extends PureComponent {
             ? <List
                 items={this.state.items}
                 currentDate={this.state.currentDate}
+                data={this.state.dataSet}
               />
             : <TableList
                 currentDate={this.state.currentDate}

@@ -1,18 +1,9 @@
 import React from 'react';
-import {Card, Icon, Avatar} from 'antd';
-const durationOfmployment = d => {
-  if (d % 12 === 0) {
-    let y = d / 12;
-    return `${y} ปี`;
-  } else {
-    let m = d % 12;
-    let y = parseInt (d / 12);
-    return `${y} ปี ${m} เดือน`;
-  }
-};
+import {Card} from 'antd';
+import {DurationOfmployment} from '../../Helper.js';
 const PersonalData = props => {
   return (
-    <div style={{paddingLeft:10}}>
+    <div style={{paddingLeft: 10}}>
       <Card style={{width: 350}}>
         <div style={{display: 'flex', textAlign: 'left'}}>
           <img
@@ -27,7 +18,7 @@ const PersonalData = props => {
             <p><b>E-Mail: </b>{props.data.email}</p>
             <p><b>วันที่เริ่มงาน: </b>{props.data.startWorkingDay}</p>
             <p>
-              <b>อายุงาน: </b>{durationOfmployment (props.data.totalWorking)}
+              <b>อายุงาน: </b>{DurationOfmployment (props.data.totalWorking)}
             </p>
           </div>
         </div>

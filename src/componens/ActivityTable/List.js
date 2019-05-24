@@ -1,137 +1,8 @@
 import React from 'react';
 import {Card, Icon} from 'antd';
-const data = {
-  isSubmit: false,
-  timeSheet: [
-    {
-      dateTimeStamp: '2019-05-01',
-      taskList: [
-        {
-          projectCode: 'P001',
-          typeCode: 'T001',
-          workingHours: 2,
-          description: 'Change Requirement Logic BS',
-        },
-        {
-          projectCode: 'P002',
-          typeCode: 'T002',
-          workingHours: 6,
-          description: 'Setup Project',
-        },
-      ],
-    },
-    {
-      dateTimeStamp: '2019-05-02',
-      taskList: [
-        {
-          projectCode: 'P001',
-          typeCode: 'T001',
-          workingHours: 2,
-          description: 'Change Requirement Logic CA',
-        },
-        {
-          projectCode: 'P002',
-          typeCode: 'T002',
-          workingHours: 6,
-          description: 'Setup SmartObject',
-        },
-      ],
-    },
-    {
-      dateTimeStamp: '2019-05-03',
-      taskList: [
-        {
-          projectCode: 'P001',
-          typeCode: 'T001',
-          workingHours: 2,
-          description: 'Change Requirement Logic PV',
-        },
-        {
-          projectCode: 'P002',
-          typeCode: 'T002',
-          workingHours: 6,
-          description: 'Setup SmartForm',
-        },
-      ],
-    },
-    {
-      dateTimeStamp: '2019-05-06',
-      taskList: [
-        {
-          projectCode: 'P001',
-          typeCode: 'T001',
-          workingHours: 2,
-          description: 'Fixed Issue',
-        },
-        {
-          projectCode: 'P002',
-          typeCode: 'T002',
-          workingHours: 6,
-          description: 'Setup Workflow',
-        },
-      ],
-    },
-    {
-      dateTimeStamp: '2019-05-07',
-      taskList: [
-        {
-          projectCode: 'P001',
-          typeCode: 'T001',
-          workingHours: 2,
-          description: 'Fixed Data Dup',
-        },
-        {
-          projectCode: 'P002',
-          typeCode: 'T002',
-          workingHours: 6,
-          description: 'Testing',
-        },
-      ],
-    },
-  ],
-};
+import {FomatDate} from '../../Helper.js'
 const DateFomat = d => {
-  const year = parseInt (d.substring (0, 4)) + 543;
-  var month = '';
-  const day = parseInt (d.substring (8, 11));
-  switch (parseInt (d.substring (5, 8))) {
-    case 1:
-      month = 'มกราคม';
-      break;
-    case 2:
-      month = 'กุมภาพันธ์';
-      break;
-    case 3:
-      month = 'มีนาคม';
-      break;
-    case 4:
-      month = 'เมษายน';
-      break;
-    case 5:
-      month = 'พฤษภาคม';
-      break;
-    case 6:
-      month = 'มิถุนายน';
-      break;
-    case 7:
-      month = 'กรกฎาคม';
-      break;
-    case 8:
-      month = 'สิงหาคม';
-      break;
-    case 9:
-      month = 'กันยายน';
-      break;
-    case 10:
-      month = 'ตุลาคม';
-      break;
-    case 11:
-      month = 'พฤษจิกายน';
-      break;
-    case 12:
-      month = 'ธันวาคม';
-      break;
-  }
+  const {day,month,year} = FomatDate(d)
   return (
     <div style={{display: 'flex', justifyContent: 'space-between'}}>
       <div>
@@ -153,7 +24,7 @@ const List = props => (
       // background: '#ECECEC',
     }}
   >
-    {data.timeSheet.map ((item, index) => (
+    {props.data.timeSheet.map ((item, index) => (
       <div key={index}>
         <Card
           key={index}
