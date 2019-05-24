@@ -1,6 +1,8 @@
 import React, {PureComponent} from 'react';
 import List from './List';
+import TableList from './TableList';
 import {Modal, Button, Icon} from 'antd';
+
 export default class idnex extends PureComponent {
   state = {
     term: {
@@ -8,9 +10,100 @@ export default class idnex extends PureComponent {
     },
     taskList: [],
     items: [],
+    dataSet: {
+      isSubmit: false,
+      timeSheet: [
+        {
+          dateTimeStamp: '2019-05-01',
+          taskList: [
+            {
+              projectCode: 'P001',
+              typeCode: 'T001',
+              workingHours: 2,
+              description: 'Change Requirement Logic BS',
+            },
+            {
+              projectCode: 'P002',
+              typeCode: 'T002',
+              workingHours: 6,
+              description: 'Setup Project',
+            },
+          ],
+        },
+        {
+          dateTimeStamp: '2019-05-02',
+          taskList: [
+            {
+              projectCode: 'P001',
+              typeCode: 'T001',
+              workingHours: 2,
+              description: 'Change Requirement Logic CA',
+            },
+            {
+              projectCode: 'P002',
+              typeCode: 'T002',
+              workingHours: 6,
+              description: 'Setup SmartObject',
+            },
+          ],
+        },
+        {
+          dateTimeStamp: '2019-05-03',
+          taskList: [
+            {
+              projectCode: 'P001',
+              typeCode: 'T001',
+              workingHours: 2,
+              description: 'Change Requirement Logic PV',
+            },
+            {
+              projectCode: 'P002',
+              typeCode: 'T002',
+              workingHours: 6,
+              description: 'Setup SmartForm',
+            },
+          ],
+        },
+        {
+          dateTimeStamp: '2019-05-06',
+          taskList: [
+            {
+              projectCode: 'P001',
+              typeCode: 'T001',
+              workingHours: 2,
+              description: 'Fixed Issue',
+            },
+            {
+              projectCode: 'P002',
+              typeCode: 'T002',
+              workingHours: 6,
+              description: 'Setup Workflow',
+            },
+          ],
+        },
+        {
+          dateTimeStamp: '2019-05-07',
+          taskList: [
+            {
+              projectCode: 'P001',
+              typeCode: 'T001',
+              workingHours: 2,
+              description: 'Fixed Data Dup',
+            },
+            {
+              projectCode: 'P002',
+              typeCode: 'T002',
+              workingHours: 6,
+              description: 'Testing',
+            },
+          ],
+        },
+      ],
+    },
     currentDate: '',
     loading: false,
     visible: false,
+    display: 0,
   };
   componentWillMount () {
     const d = new Date ();
@@ -67,6 +160,9 @@ export default class idnex extends PureComponent {
       },
     });
   };
+  changeDisplay = p => {
+    p === 1 ? this.setState ({display: 0}) : this.setState ({display: 1});
+  };
   showModal = () => {
     this.setState ({visible: true});
   };
@@ -84,15 +180,54 @@ export default class idnex extends PureComponent {
     await alert (JSON.stringify (this.state.items));
   };
   render () {
-    const {visible, loading, currentDate} = this.state;
+    const {visible, loading, currentDate, display} = this.state;
     return (
-      <div>
+      <div style={{backgroundColor: '#ECECEC'}}>
         <input value={this.state.term.data1} onChange={this.onChange} />
         <button onClick={this.onSubmit}>Submit</button>
-        <Button style={{backgroundColor: '#4FFF33'}} onClick={this.showModal}>
-          <b>Add</b>
-        </Button>
-        <List items={this.state.items} currentDate={this.state.currentDate} />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingRight: '10px',
+            paddingLeft: '10px',
+          }}
+        >
+          <span>
+            <Button style={{color: 'black'}} onClick={this.showModal}>
+              <Icon style={{fontSize: 15}} type="plus-circle" />
+              Add
+            </Button>
+          </span>
+          <span style={{color: 'black', marginBottom: 8}}>
+            <Button
+              style={{marginRight: 3}}
+              onClick={() => this.changeDisplay (1)}
+            >
+              <Icon type="idcard" />Card
+            </Button>
+            <Button onClick={() => this.changeDisplay (0)}>
+              <Icon type="table" />Table
+            </Button>
+          </span>
+        </div>
+        <div
+          style={{
+            paddingLeft: '30px',
+            paddingRight: '30px',
+            paddingBottom: '30px',
+          }}
+        >
+          {display === 0
+            ? <List
+                items={this.state.items}
+                currentDate={this.state.currentDate}
+              />
+            : <TableList
+                currentDate={this.state.currentDate}
+                dataSet={this.state.dataSet}
+              />}
+        </div>
         <Modal
           visible={visible}
           title={currentDate}

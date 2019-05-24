@@ -150,13 +150,19 @@ const List = props => (
     style={{
       display: 'flex',
       flexWrap: 'wrap',
-      background: '#ECECEC',
-      padding: '30px',
+      // background: '#ECECEC',
     }}
   >
     {data.timeSheet.map ((item, index) => (
       <div key={index}>
-        <Card key={index} bordered={true} style={{width: 300, margin: 8}}>
+        <Card
+          key={index}
+          bordered={true}
+          style={{width: 300, margin: 8}}
+          actions={[
+            <Icon type="edit" onClick={() => alert (props.currentDate)} />,
+          ]}
+        >
           <p>{DateFomat (item.dateTimeStamp)}</p>
           {item.taskList.map ((item, index) => (
             <div key={index}>
@@ -180,24 +186,6 @@ const List = props => (
     ))}
     {console.log (props.items)}
     {props.items.map ((item, index) => <p>{item.data1}</p>)}
-    {/* {props.items.map ((item, index, currentDate) => (
-      <Card
-        key={index}
-        bordered={true}
-        style={{width: 200, margin: 8}}
-        actions={[
-          <Icon type="setting" onClick={() => alert (props.currentDate)} />,
-          <Icon type="edit" />,
-          <Icon type="ellipsis" />,
-        ]}
-      >
-        <p>{item}</p>
-        <p>Card content</p>
-        <p>Card content</p>
-        <p>Card content</p>
-      </Card>
-    <p>{item}</p>
-    ))} */}
   </div>
 );
 
