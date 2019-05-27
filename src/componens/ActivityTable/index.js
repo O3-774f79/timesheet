@@ -1,9 +1,13 @@
 import React, {PureComponent} from 'react';
 import List from './List';
 import TableList from './TableList';
-import {Modal, Button, Icon} from 'antd';
-import {CurrentDate} from '../../Helper.js';
-const api = ''
+import {Modal, Button, Icon, Input, DatePicker, Select, Spin} from 'antd';
+import {CurrentDate, FomatDate} from '../../Helper.js';
+import axios from 'axios';
+const axiosConfig = {withCredentials: true};
+const Option = Select.Option;
+const {TextArea} = Input;
+
 export default class idnex extends PureComponent {
   state = {
     term: {
@@ -13,74 +17,69 @@ export default class idnex extends PureComponent {
     items: [],
     dataSet: {
       isSubmit: false,
-      timeSheet: [
-        {
-          timeSheetId: 1,
-          dateTimeStamp: '2019-05-01',
-          taskList: [
-            {
-              projectCode: 'P001',
-              typeCode: 'T001',
-              workingHours: 2,
-              description: 'Change Requirement Logic BS',
-            },
-            {
-              projectCode: 'P002',
-              typeCode: 'T002',
-              workingHours: 6,
-              description: 'Setup Project',
-            },
-          ],
-        },
-        {
-          timeSheetId: 2,
-          dateTimeStamp: '2019-05-02',
-          taskList: [
-            {
-              projectCode: 'P001',
-              typeCode: 'T001',
-              workingHours: 2,
-              description: 'Change Requirement Logic CA',
-            },
-            {
-              projectCode: 'P002',
-              typeCode: 'T002',
-              workingHours: 6,
-              description: 'Setup SmartObject',
-            },
-          ],
-        },
-        {
-          timeSheetId: 3,
-          dateTimeStamp: '2019-05-03',
-          taskList: [
-            {
-              projectCode: 'P001',
-              typeCode: 'T001',
-              workingHours: 2,
-              description: 'Change Requirement Logic PV',
-            },
-            {
-              projectCode: 'P002',
-              typeCode: 'T002',
-              workingHours: 6,
-              description: 'Setup SmartForm',
-            },
-          ],
-        },
-      ],
+      timeSheet: [],
     },
+    inputActivity: [],
+    valueActivity: {
+      date: '',
+      projectCode: '',
+      projectType: '',
+      workHoursTotal: '',
+      description: '',
+    },
+    workHours: [],
+    projectName: [],
+    projectType: [],
+    datePicker: '',
+    spinLoading: true,
     currentDate: '',
     loading: false,
     visible: false,
     display: 0,
   };
-  componentDidMount () {
-     
+  async componentDidMount () {
+    const date = '2019-05-01';
+    try {
+      await axios.post (
+        `/Login`,
+        {
+          username: 'nuttaphon@leaderplanet.co.th',
+          password: 'Admin',
+        },
+        axiosConfig
+      );
+
+      const resTimesheet = await axios.get (
+        `/TimeSheet?date=` + date,
+        axiosConfig
+      );
+      const resProjectType = await axios.get (
+        `/ValueHelp/GetTypeProject`,
+        axiosConfig
+      );
+      const resProjectName = await axios.get (
+        `/ValueHelp/GetProject`,
+        axiosConfig
+      );
+      await this.setState ({
+        dataSet: resTimesheet.data,
+        projectName: resProjectName.data,
+        projectType: resProjectType.data,
+        spinLoading: false,
+      });
+      await console.log ('projecttype', this.state.projectType);
+    } catch (e) {
+      console.log (e);
+    }
   }
-  componentWillMount () {
-    this.setState ({
+  async componentWillMount () {
+    var data = await [];
+    for (let i = 0; i <= 16; i++) {
+      await data.push (i);
+    }
+    await this.setState ({
       currentDate: CurrentDate (),
+      workHours: data,
     });
   }
   onChange = event => {
@@ -109,83 +108,212 @@ export default class idnex extends PureComponent {
     });
     await alert (JSON.stringify (this.state.items));
   };
+  onChangDatePicher = (date, dateString) => {
+    this.setState ({datePicker: dateString});
+  };
+  onChangeTest = event => {
+    this.setState ({
+      valueActivity: {
+        test: event.target.value,
+      },
+    });
+  };
+  DateFomat = d => {
+    if (d === '') {
+      return '';
+    } else {
+    }
+    const {day, month, year} = FomatDate (d);
+    return `Date :${day} ${month} ${year}`;
+  };
+  handleActivityAdd = async event => {
+    await event.preventDefault ();
+    await this.state.inputActivity.push (this.state.valueActivity);
+    await this.setState ({
+      valueActivity: {
+        test: '',
+      },
+    });
+    await console.log (this.state.inputActivity);
+  };
+  onProjectChange = value => {
+    console.log (`selected ${value}`);
+  };
+
+  onProjectBlur = () => {
+    console.log ('blur');
+  };
+
+  onProjectFocus = () => {
+    console.log ('focus');
+  };
+  onWorkhoursChange = value => {
+    console.log (`selected ${value}`);
+  };
+
+  onWorkhoursBlur = () => {
+    console.log ('blur');
+  };
+
+  onWorkhoursFocus = () => {
+    console.log ('focus');
+  };
+  onTypeChange = value => {
+    console.log (`selected ${value}`);
+  };
+
+  onTypeBlur = () => {
+    console.log ('blur');
+  };
+  onTypeFocus = () => {
+    console.log ('focus');
+  };
   render () {
     const {visible, loading, currentDate, display} = this.state;
     return (
-      <div style={{backgroundColor: '#ECECEC'}}>
-        <input value={this.state.term.data1} onChange={this.onChange} />
-        <button onClick={this.onSubmit}>Submit</button>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            paddingRight: '10px',
-            paddingLeft: '10px',
-          }}
-        >
-          <span>
-            <Button style={{color: 'black'}} onClick={this.showModal}>
-              <Icon style={{fontSize: 15}} type="plus-circle" />
-              Add
-            </Button>
-          </span>
-          <span style={{color: 'black', marginBottom: 8}}>
-            <Button
-              style={{marginRight: 3}}
-              onClick={() => this.changeDisplay (1)}
-            >
-              <Icon type="idcard" />Card
-            </Button>
-            <Button onClick={() => this.changeDisplay (0)}>
-              <Icon type="table" />Table
-            </Button>
-          </span>
-        </div>
-        <div
-          style={{
-            paddingLeft: '30px',
-            paddingRight: '30px',
-            paddingBottom: '30px',
-          }}
-        >
-          {display === 0
-            ? <List
-                items={this.state.items}
-                currentDate={this.state.currentDate}
-                data={this.state.dataSet}
-              />
-            : <TableList
-                currentDate={this.state.currentDate}
-                dataSet={this.state.dataSet}
-              />}
-        </div>
-        <Modal
-          visible={visible}
-          title={currentDate}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              Return
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              loading={loading}
-              onClick={this.handleOk}
-            >
-              Submit
-            </Button>,
-          ]}
-        >
-          <div style={{display: 'flex'}}>
-            <Button style={{cursor: 'pointer', backgroundColor: 'green'}}>
-              <Icon style={{fontSize: 20}} type="plus-circle" />
-              <p style={{marginLeft: 5}}>Add Activity</p>
-            </Button>
+      <Spin spinning={this.state.spinLoading}>
+        <div style={{backgroundColor: '#ECECEC'}}>
+          <input value={this.state.term.data1} onChange={this.onChange} />
+          <button onClick={this.onSubmit}>Submit</button>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              paddingRight: '10px',
+              paddingLeft: '10px',
+            }}
+          >
+            <span>
+              <Button style={{color: 'black'}} onClick={this.showModal}>
+                <Icon style={{fontSize: 15}} type="plus-circle" />
+                Add
+              </Button>
+            </span>
+            <span style={{color: 'black', marginBottom: 8}}>
+              <Button
+                style={{marginRight: 3}}
+                onClick={() => this.changeDisplay (1)}
+              >
+                <Icon type="idcard" />Card
+              </Button>
+              <Button onClick={() => this.changeDisplay (0)}>
+                <Icon type="table" />Table
+              </Button>
+            </span>
           </div>
-        </Modal>
-      </div>
+          <div
+            style={{
+              paddingLeft: '30px',
+              paddingRight: '30px',
+              paddingBottom: '30px',
+            }}
+          >
+            {display === 0
+              ? <List
+                  items={this.state.items}
+                  currentDate={currentDate}
+                  data={this.state.dataSet}
+                />
+              : <TableList
+                  currentDate={currentDate}
+                  dataSet={this.state.dataSet}
+                />}
+          </div>
+          <Modal
+            visible={visible}
+            title={
+              'Add Activity ' + `${this.DateFomat (this.state.datePicker)}`
+            }
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+            footer={[
+              <Button key="back" onClick={this.handleCancel}>
+                Return
+              </Button>,
+              <Button
+                key="submit"
+                type="primary"
+                loading={loading}
+                onClick={this.handleActivityAdd}
+              >
+                Submit
+              </Button>,
+            ]}
+          >
+            <div>
+              {this.state.inputActivity.map ((item, index) => (
+                <li key={index}>{item.test}</li>
+              ))}
+            </div>
+            <div>
+              <div>
+                <DatePicker
+                  style={{width: 200}}
+                  onChange={this.onChangDatePicher}
+                />
+              </div>
+              <div>
+                <Select
+                  showSearch
+                  style={{width: 200}}
+                  placeholder="Project Name"
+                  onChange={this.onProjectChange}
+                  onFocus={this.onProjectFocus}
+                  onBlur={this.onProjectBlur}
+                >
+                  {this.state.projectName.map ((item, key) => (
+                    <Option key={key} value={item.valueKey}>
+                      {item.valueText}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Select
+                  showSearch
+                  style={{width: 200}}
+                  placeholder="Project Type"
+                  onChange={this.onTypeChange}
+                  onFocus={this.onTypeFocus}
+                  onBlur={this.onTypeBlur}
+                >
+                  {this.state.projectType.map ((item, key) => (
+                    <Option key={key} value={item.valueKey}>
+                      {item.valueText}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Select
+                  showSearch
+                  style={{width: 200}}
+                  placeholder="Workhours"
+                  onChange={this.onWorkhoursChange}
+                  onFocus={this.onWorkhoursFocus}
+                  onBlur={this.onWorkhoursBlur}
+                >
+                  {this.state.workHours.map ((item, key) => (
+                    <Option value={item}>{item}</Option>
+                  ))}
+                </Select>
+                <input
+                  value={this.state.valueActivity.test}
+                  onChange={this.onChangeTest}
+                />
+              </div>
+              <div>
+                <TextArea rows={4} />
+              </div>
+            </div>
+            <Button
+              style={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
+            >
+              <Icon style={{fontSize: 20, color: 'black'}} type="plus-circle" />
+            </Button>
+          </Modal>
+        </div>
+      </Spin>
     );
   }
 }

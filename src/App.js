@@ -7,7 +7,7 @@ import NavMenu from './componens/Layout/HomeLayout';
 import ActivityTimeSheet from './componens/Activity';
 import SummaryData from './componens/SummaryData/SummaryData.js'
 import PageNotFound from './componens/Layout/PageNotFound'
-import Login from './components/Login'
+import Login from './componens/Login/Login.js'
 function App () {
   return (
     <div className="App">
@@ -16,7 +16,7 @@ function App () {
           <Route exact path="/">
             <Redirect to="/login" />
           </Route>
-          <Route path="/login" component={NavMenu} />
+          <RouteLayout path="/login" component={Login} />
           <RouteLayout path="/timesheet" component={ActivityTimeSheet} />
           <RouteLayout path="/home" component={SummaryData} />
           <Route component={PageNotFound} />
