@@ -1,3 +1,4 @@
+import axios from 'axios'
 export function DurationOfmployment (d) {
   if (d % 12 === 0) {
     let y = d / 12;
@@ -97,4 +98,13 @@ export function FomatDate (d) {
       break;
   }
   return {day: `${d_day}`, month: `${d_month}`, year: `${d_year}`};
+}
+
+export async function tranferValueProjectName(t) {
+  const axiosConfig = {withCredentials: true};
+  const resProjectType = await axios.get (
+    `/ValueHelp/GetTypeProject`,
+    axiosConfig
+  );
+return resProjectType
 }

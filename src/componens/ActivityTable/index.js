@@ -1,8 +1,17 @@
 import React, {PureComponent} from 'react';
 import List from './List';
 import TableList from './TableList';
-import {Modal, Button, Icon, Input, DatePicker, Select, Spin} from 'antd';
-import {CurrentDate, FomatDate} from '../../Helper.js';
+import {
+  Modal,
+  Button,
+  Icon,
+  Input,
+  DatePicker,
+  Select,
+  Spin,
+  Divider,
+} from 'antd';
+import {CurrentDate, FomatDate, tranferValueProjectName} from '../../Helper.js';
 import axios from 'axios';
 const axiosConfig = {withCredentials: true};
 const Option = Select.Option;
@@ -21,12 +30,16 @@ export default class idnex extends PureComponent {
     },
     inputActivity: [],
     valueActivity: {
-      date: '',
       projectCode: '',
       projectType: '',
       workHoursTotal: '',
       description: '',
     },
+    inputProjectName: '',
+    inputProjectType: '',
+    inputWorkHours: '',
+    inputDescription: '',
+
     workHours: [],
     projectName: [],
     projectType: [],
@@ -38,6 +51,7 @@ export default class idnex extends PureComponent {
     display: 0,
   };
   async componentDidMount () {
+    console.log (tranferValueProjectName ());
     const date = '2019-05-01';
     try {
       await axios.post (
@@ -128,15 +142,34 @@ export default class idnex extends PureComponent {
   };
   handleActivityAdd = async event => {
     await event.preventDefault ();
+    await this.setState ({
+      valueActivity: {
+        projectCode: this.state.inputProjectName,
+        projectType: this.state.inputProjectType,
+        workHoursTotal: this.state.inputWorkHours,
+        description: this.state.inputDescription,
+      },
+    });
     await this.state.inputActivity.push (this.state.valueActivity);
     await this.setState ({
       valueActivity: {
-        test: '',
+        projectCode: '',
+        projectType: '',
+        workHoursTotal: '',
+        description: '',
       },
+      inputProjectName: '',
+      inputProjectType: '',
+      inputWorkHours: '',
+      inputDescription: '',
     });
     await console.log (this.state.inputActivity);
   };
+  onDescriptionChange = event => {
+    this.setState ({inputDescription: event.target.value});
+  };
   onProjectChange = value => {
+    this.setState ({inputProjectName: value});
     console.log (`selected ${value}`);
   };
 
@@ -148,6 +181,7 @@ export default class idnex extends PureComponent {
     console.log ('focus');
   };
   onWorkhoursChange = value => {
+    this.setState ({inputWorkHours: value});
     console.log (`selected ${value}`);
   };
 
@@ -159,6 +193,7 @@ export default class idnex extends PureComponent {
     console.log ('focus');
   };
   onTypeChange = value => {
+    this.setState ({inputProjectType: value});
     console.log (`selected ${value}`);
   };
 
@@ -230,21 +265,21 @@ export default class idnex extends PureComponent {
               <Button key="back" onClick={this.handleCancel}>
                 Return
               </Button>,
-              <Button
-                key="submit"
-                type="primary"
-                loading={loading}
-                onClick={this.handleActivityAdd}
-              >
+              <Button key="submit" type="primary" loading={loading}>
                 Submit
               </Button>,
             ]}
           >
-            <div>
-              {this.state.inputActivity.map ((item, index) => (
-                <li key={index}>{item.test}</li>
-              ))}
-            </div>
+
+            {this.state.inputActivity.map ((item, index) => (
+              <div key={index}>
+                <p>ProjectName:{item.projectCode}</p>
+                <p>ProjectType:{item.projectType}</p>
+                <p>WorkHours  :{item.workHoursTotal}</p>
+                <p>Description:{item.description}</p>
+                <Divider />
+              </div>
+            ))}
             <div>
               <div>
                 <DatePicker
@@ -303,11 +338,12 @@ export default class idnex extends PureComponent {
                 />
               </div>
               <div>
-                <TextArea rows={4} />
+                <TextArea rows={4} onChange={this.onDescriptionChange} />
               </div>
             </div>
             <Button
               style={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
+              onClick={this.handleActivityAdd}
             >
               <Icon style={{fontSize: 20, color: 'black'}} type="plus-circle" />
             </Button>

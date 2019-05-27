@@ -55,7 +55,6 @@ const List = props => (
         </Card>
       </div>
     ))}
-    {console.log (props.items)}
     {props.items.map ((item, index) => <p>{item.data1}</p>)}
   </div>
 );
