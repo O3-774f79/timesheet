@@ -3,6 +3,7 @@ import List from './List';
 import TableList from './TableList';
 import {Modal, Button, Icon} from 'antd';
 import {CurrentDate} from '../../Helper.js';
+const api = ''
 export default class idnex extends PureComponent {
   state = {
     term: {
@@ -14,6 +15,7 @@ export default class idnex extends PureComponent {
       isSubmit: false,
       timeSheet: [
         {
+          timeSheetId: 1,
           dateTimeStamp: '2019-05-01',
           taskList: [
             {
@@ -31,6 +33,7 @@ export default class idnex extends PureComponent {
           ],
         },
         {
+          timeSheetId: 2,
           dateTimeStamp: '2019-05-02',
           taskList: [
             {
@@ -48,6 +51,7 @@ export default class idnex extends PureComponent {
           ],
         },
         {
+          timeSheetId: 3,
           dateTimeStamp: '2019-05-03',
           taskList: [
             {
@@ -64,40 +68,6 @@ export default class idnex extends PureComponent {
             },
           ],
         },
-        {
-          dateTimeStamp: '2019-05-06',
-          taskList: [
-            {
-              projectCode: 'P001',
-              typeCode: 'T001',
-              workingHours: 2,
-              description: 'Fixed Issue',
-            },
-            {
-              projectCode: 'P002',
-              typeCode: 'T002',
-              workingHours: 6,
-              description: 'Setup Workflow',
-            },
-          ],
-        },
-        {
-          dateTimeStamp: '2019-05-07',
-          taskList: [
-            {
-              projectCode: 'P001',
-              typeCode: 'T001',
-              workingHours: 2,
-              description: 'Fixed Data Dup',
-            },
-            {
-              projectCode: 'P002',
-              typeCode: 'T002',
-              workingHours: 6,
-              description: 'Testing',
-            },
-          ],
-        },
       ],
     },
     currentDate: '',
@@ -105,6 +75,9 @@ export default class idnex extends PureComponent {
     visible: false,
     display: 0,
   };
+  componentDidMount () {
+     
+  }
   componentWillMount () {
     this.setState ({
       currentDate: CurrentDate (),

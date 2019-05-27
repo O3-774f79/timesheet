@@ -7,6 +7,7 @@ import NavMenu from './componens/Layout/HomeLayout';
 import ActivityTimeSheet from './componens/Activity';
 import SummaryData from './componens/SummaryData/SummaryData.js'
 import PageNotFound from './componens/Layout/PageNotFound'
+import Login from './components/Login'
 function App () {
   return (
     <div className="App">
