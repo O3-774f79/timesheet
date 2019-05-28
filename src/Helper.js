@@ -100,11 +100,3 @@ export function FomatDate (d) {
   return {day: `${d_day}`, month: `${d_month}`, year: `${d_year}`};
 }
 
-export async function tranferValueProjectName(t) {
-  const axiosConfig = {withCredentials: true};
-  const resProjectType = await axios.get (
-    `/ValueHelp/GetTypeProject`,
-    axiosConfig
-  );
-return resProjectType
-}

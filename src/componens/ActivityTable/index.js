@@ -11,7 +11,7 @@ import {
   Spin,
   Divider,
 } from 'antd';
-import {CurrentDate, FomatDate, tranferValueProjectName} from '../../Helper.js';
+import {CurrentDate, FomatDate} from '../../Helper.js';
 import axios from 'axios';
 const axiosConfig = {withCredentials: true};
 const Option = Select.Option;
@@ -25,25 +25,30 @@ export default class idnex extends PureComponent {
     taskList: [],
     items: [],
     dataSet: {
+      timeSheet: [],
+    },
+    dataSend: {
       isSubmit: false,
+      dateTimeStamp: '',
       timeSheet: [],
     },
     inputActivity: [],
     valueActivity: {
       projectCode: '',
-      projectType: '',
-      workHoursTotal: '',
+      typeCode: '',
+      workingHours: 0,
       description: '',
     },
-    inputProjectName: '',
-    inputProjectType: '',
-    inputWorkHours: '',
+    inputProjectName: 'Please Select',
+    inputProjectType: 'Please Select',
+    inputWorkHours: 'Please Select',
     inputDescription: '',
 
     workHours: [],
     projectName: [],
     projectType: [],
     datePicker: '',
+    datepickerDisplay: false,
     spinLoading: true,
     currentDate: '',
     loading: false,
@@ -51,8 +56,7 @@ export default class idnex extends PureComponent {
     display: 0,
   };
   async componentDidMount () {
-    console.log (tranferValueProjectName ());
-    const date = '2019-05-01';
+    const date = new Date ().toJSON ().slice (0, 10);
     try {
       await axios.post (
         `/Login`,
@@ -67,6 +71,7 @@ export default class idnex extends PureComponent {
         `/TimeSheet?date=` + date,
         axiosConfig
       );
+      console.log (resTimesheet);
       const resProjectType = await axios.get (
         `/ValueHelp/GetTypeProject`,
         axiosConfig
@@ -81,7 +86,6 @@ export default class idnex extends PureComponent {
         projectType: resProjectType.data,
         spinLoading: false,
       });
-      await console.log ('projecttype', this.state.projectType);
     } catch (e) {
       console.log (e);
     }
@@ -125,13 +129,6 @@ export default class idnex extends PureComponent {
   onChangDatePicher = (date, dateString) => {
     this.setState ({datePicker: dateString});
   };
-  onChangeTest = event => {
-    this.setState ({
-      valueActivity: {
-        test: event.target.value,
-      },
-    });
-  };
   DateFomat = d => {
     if (d === '') {
       return '';
@@ -145,8 +142,8 @@ export default class idnex extends PureComponent {
     await this.setState ({
       valueActivity: {
         projectCode: this.state.inputProjectName,
-        projectType: this.state.inputProjectType,
-        workHoursTotal: this.state.inputWorkHours,
+        typeCode: this.state.inputProjectType,
+        workingHours: parseInt (this.state.inputWorkHours),
         description: this.state.inputDescription,
       },
     });
@@ -154,16 +151,44 @@ export default class idnex extends PureComponent {
     await this.setState ({
       valueActivity: {
         projectCode: '',
-        projectType: '',
+        typeCode: '',
         workHoursTotal: '',
         description: '',
       },
-      inputProjectName: '',
-      inputProjectType: '',
-      inputWorkHours: '',
+      inputProjectName: 'Please Select',
+      inputProjectType: 'Please Select',
+      inputWorkHours: 'Please Select',
+      datepickerDisplay: true,
       inputDescription: '',
     });
     await console.log (this.state.inputActivity);
+  };
+  handleSubmit = async () => {
+    try {
+      await this.setState ({
+        dataSend: {
+          isSubmit: false,
+          timeSheet: [
+            {
+              dateTimeStamp: new Date ().toJSON ().slice (0, 10),
+              taskList: this.state.inputActivity,
+            },
+          ],
+        },
+      });
+      await console.log (JSON.stringify (this.state.dataSend));
+      const data = await axios.post (
+        `/TimeSheet/Save`,
+        this.state.dataSend,
+        axiosConfig
+      );
+      console.log (data);
+    } catch (e) {
+      console.log ('err', e);
+    }
+  };
+  onMonthPickerChange = (a, b) => {
+    console.log ('month', b);
   };
   onDescriptionChange = event => {
     this.setState ({inputDescription: event.target.value});
@@ -172,184 +197,177 @@ export default class idnex extends PureComponent {
     this.setState ({inputProjectName: value});
     console.log (`selected ${value}`);
   };
-
-  onProjectBlur = () => {
-    console.log ('blur');
-  };
-
-  onProjectFocus = () => {
-    console.log ('focus');
-  };
   onWorkhoursChange = value => {
     this.setState ({inputWorkHours: value});
     console.log (`selected ${value}`);
-  };
-
-  onWorkhoursBlur = () => {
-    console.log ('blur');
-  };
-
-  onWorkhoursFocus = () => {
-    console.log ('focus');
   };
   onTypeChange = value => {
     this.setState ({inputProjectType: value});
     console.log (`selected ${value}`);
   };
-
-  onTypeBlur = () => {
-    console.log ('blur');
-  };
-  onTypeFocus = () => {
-    console.log ('focus');
-  };
   render () {
     const {visible, loading, currentDate, display} = this.state;
     return (
-      <Spin spinning={this.state.spinLoading}>
-        <div style={{backgroundColor: '#ECECEC'}}>
-          <input value={this.state.term.data1} onChange={this.onChange} />
-          <button onClick={this.onSubmit}>Submit</button>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              paddingRight: '10px',
-              paddingLeft: '10px',
-            }}
-          >
-            <span>
-              <Button style={{color: 'black'}} onClick={this.showModal}>
-                <Icon style={{fontSize: 15}} type="plus-circle" />
-                Add
-              </Button>
-            </span>
-            <span style={{color: 'black', marginBottom: 8}}>
-              <Button
-                style={{marginRight: 3}}
-                onClick={() => this.changeDisplay (1)}
-              >
-                <Icon type="idcard" />Card
-              </Button>
-              <Button onClick={() => this.changeDisplay (0)}>
-                <Icon type="table" />Table
-              </Button>
-            </span>
-          </div>
-          <div
-            style={{
-              paddingLeft: '30px',
-              paddingRight: '30px',
-              paddingBottom: '30px',
-            }}
-          >
-            {display === 0
-              ? <List
-                  items={this.state.items}
-                  currentDate={currentDate}
-                  data={this.state.dataSet}
-                />
-              : <TableList
-                  currentDate={currentDate}
-                  dataSet={this.state.dataSet}
-                />}
-          </div>
-          <Modal
-            visible={visible}
-            title={
-              'Add Activity ' + `${this.DateFomat (this.state.datePicker)}`
-            }
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
-            footer={[
-              <Button key="back" onClick={this.handleCancel}>
-                Return
-              </Button>,
-              <Button key="submit" type="primary" loading={loading}>
-                Submit
-              </Button>,
-            ]}
-          >
-
-            {this.state.inputActivity.map ((item, index) => (
-              <div key={index}>
-                <p>ProjectName:{item.projectCode}</p>
-                <p>ProjectType:{item.projectType}</p>
-                <p>WorkHours  :{item.workHoursTotal}</p>
-                <p>Description:{item.description}</p>
-                <Divider />
-              </div>
-            ))}
-            <div>
-              <div>
-                <DatePicker
-                  style={{width: 200}}
-                  onChange={this.onChangDatePicher}
-                />
-              </div>
-              <div>
-                <Select
-                  showSearch
-                  style={{width: 200}}
-                  placeholder="Project Name"
-                  onChange={this.onProjectChange}
-                  onFocus={this.onProjectFocus}
-                  onBlur={this.onProjectBlur}
-                >
-                  {this.state.projectName.map ((item, key) => (
-                    <Option key={key} value={item.valueKey}>
-                      {item.valueText}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
-              <div>
-                <Select
-                  showSearch
-                  style={{width: 200}}
-                  placeholder="Project Type"
-                  onChange={this.onTypeChange}
-                  onFocus={this.onTypeFocus}
-                  onBlur={this.onTypeBlur}
-                >
-                  {this.state.projectType.map ((item, key) => (
-                    <Option key={key} value={item.valueKey}>
-                      {item.valueText}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
-              <div>
-                <Select
-                  showSearch
-                  style={{width: 200}}
-                  placeholder="Workhours"
-                  onChange={this.onWorkhoursChange}
-                  onFocus={this.onWorkhoursFocus}
-                  onBlur={this.onWorkhoursBlur}
-                >
-                  {this.state.workHours.map ((item, key) => (
-                    <Option value={item}>{item}</Option>
-                  ))}
-                </Select>
-                <input
-                  value={this.state.valueActivity.test}
-                  onChange={this.onChangeTest}
-                />
-              </div>
-              <div>
-                <TextArea rows={4} onChange={this.onDescriptionChange} />
-              </div>
-            </div>
-            <Button
-              style={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
-              onClick={this.handleActivityAdd}
+      <React.Fragment>
+        <Spin spinning={this.state.spinLoading}>
+          <div style={{backgroundColor: '#ECECEC'}}>
+            <input value={this.state.term.data1} onChange={this.onChange} />
+            <button onClick={this.onSubmit}>Submit</button>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingRight: '10px',
+                paddingLeft: '10px',
+              }}
             >
-              <Icon style={{fontSize: 20, color: 'black'}} type="plus-circle" />
-            </Button>
-          </Modal>
-        </div>
-      </Spin>
+              <span>
+                <Button style={{color: 'black'}} onClick={this.showModal}>
+                  <Icon style={{fontSize: 15}} type="plus-circle" />
+                  Add
+                </Button>
+              </span>
+              <span style={{color: 'black', marginBottom: 8}}>
+                <Button
+                  style={{marginRight: 3}}
+                  onClick={() => this.changeDisplay (1)}
+                >
+                  <Icon type="idcard" />Card
+                </Button>
+                <Button onClick={() => this.changeDisplay (0)}>
+                  <Icon type="table" />Table
+                </Button>
+              </span>
+            </div>
+            <div
+              style={{
+                paddingLeft: '30px',
+                paddingRight: '30px',
+                paddingBottom: '30px',
+              }}
+            >
+              {display === 0
+                ? <List
+                    items={this.state.items}
+                    currentDate={currentDate}
+                    data={this.state.dataSet}
+                  />
+                : <TableList
+                    currentDate={currentDate}
+                    dataSet={this.state.dataSet}
+                  />}
+            </div>
+            <Modal
+              visible={visible}
+              title={
+                'Add Activity ' + `${this.DateFomat (this.state.datePicker)}`
+              }
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+              footer={[
+                <Button key="back" onClick={this.handleCancel}>
+                  Return
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  loading={loading}
+                  onClick={this.handleSubmit}
+                >
+                  Submit
+                </Button>,
+              ]}
+            >
+
+              {this.state.inputActivity.map ((item, index) => (
+                <div key={index}>
+                  <p>ProjectName:{item.projectCode}</p>
+                  <p>ProjectType:{item.projectType}</p>
+                  <p>WorkHours  :{item.workHoursTotal}</p>
+                  <p>Description:{item.description}</p>
+                  <Divider />
+                </div>
+              ))}
+              <div>
+                <div>
+                  <DatePicker
+                    style={{width: 200}}
+                    onChange={this.onChangDatePicher}
+                    disabled={this.state.datepickerDisplay}
+                  />
+                </div>
+                <div>
+                  <Select
+                    showSearch
+                    style={{width: 200}}
+                    placeholder="Project Name"
+                    onChange={this.onProjectChange}
+                    value={this.state.inputProjectName}
+                    onFocus={this.onProjectFocus}
+                    onBlur={this.onProjectBlur}
+                  >
+                    {this.state.projectName.map ((item, key) => (
+                      <Option key={key} value={item.valueKey}>
+                        {item.valueText}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <Select
+                    style={{width: 200}}
+                    placeholder="Project Type"
+                    onChange={this.onTypeChange}
+                    value={this.state.inputProjectType}
+                    onFocus={this.onTypeFocus}
+                    onBlur={this.onTypeBlur}
+                  >
+                    {this.state.projectType.map ((item, key) => (
+                      <Option key={key} value={item.valueKey}>
+                        {item.valueText}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <Select
+                    style={{width: 200}}
+                    placeholder="Workhours"
+                    onChange={this.onWorkhoursChange}
+                    onFocus={this.onWorkhoursFocus}
+                    onBlur={this.onWorkhoursBlur}
+                    value={this.state.inputWorkHours}
+                  >
+                    {this.state.workHours.map ((item, key) => (
+                      <Option value={item}>{item}</Option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <TextArea
+                    rows={4}
+                    onChange={this.onDescriptionChange}
+                    value={this.state.inputDescription}
+                  />
+                </div>
+              </div>
+              <Button
+                style={{
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                onClick={this.handleActivityAdd}
+              >
+                <Icon
+                  style={{fontSize: 20, color: 'black'}}
+                  type="plus-circle"
+                />
+              </Button>
+            </Modal>
+          </div>
+        </Spin>
+      </React.Fragment>
     );
   }
 }
