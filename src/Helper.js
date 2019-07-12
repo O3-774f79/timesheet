@@ -1,4 +1,3 @@
-import axios from 'axios'
 export function DurationOfmployment (d) {
   if (d % 12 === 0) {
     let y = d / 12;

@@ -76,10 +76,7 @@ export default class idnex extends PureComponent {
         `/ValueHelp/GetTypeProject`,
         axiosConfig
       );
-      const resProjectName = await axios.get (
-        `/ValueHelp/GetProject`,
-        axiosConfig
-      );
+      const resProjectName = await axios.get (`/Project/GetList`, axiosConfig);
       await this.setState ({
         dataSet: resTimesheet.data,
         projectName: resProjectName.data,
@@ -296,6 +293,7 @@ export default class idnex extends PureComponent {
                     disabled={this.state.datepickerDisplay}
                   />
                 </div>
+                {console.log (`projectname`, this.state.projectName)}
                 <div>
                   <Select
                     showSearch
@@ -307,8 +305,8 @@ export default class idnex extends PureComponent {
                     onBlur={this.onProjectBlur}
                   >
                     {this.state.projectName.map ((item, key) => (
-                      <Option key={key} value={item.valueKey}>
-                        {item.valueText}
+                      <Option key={key} value={item.projectCode}>
+                        {item.projectName}
                       </Option>
                     ))}
                   </Select>
